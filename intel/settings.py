@@ -29,8 +29,8 @@ SECRET_KEY = "DGFYUGEUGFEFE"
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'www.geosams.com',
-    'geosams-92zun.ondigitalocean.app',
+    'www.dataforall.store',
+    'data4all-5d2v7.ondigitalocean.app/',
     '127.0.0.1'
 ]
 
