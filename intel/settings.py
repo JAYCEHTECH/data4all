@@ -30,7 +30,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'www.dataforall.store',
-    'data4all-5d2v7.ondigitalocean.app/',
+    'data4all-5d2v7.ondigitalocean.app',
     '127.0.0.1'
 ]
 
