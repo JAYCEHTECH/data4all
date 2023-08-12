@@ -38,7 +38,7 @@ def pay_with_wallet(request):
         print(data)
 
         sms_headers = {
-            'Authorization': 'Bearer 1050|VDqcCUHwCBEbjcMk32cbdOhCFlavpDhy6vfgM4jU',
+            'Authorization': 'Bearer 1135|1MWAlxV4XTkDlfpld1VC3oRviLhhhZIEOitMjimq',
             'Content-Type': 'application/json'
         }
 
@@ -55,29 +55,29 @@ def pay_with_wallet(request):
                 new_transaction.save()
                 user.wallet -= float(amount)
                 user.save()
-                # receiver_message = f"Your bundle purchase has been completed successfully. {bundle}MB has been credited to you by {request.user.phone}.\nReference: {reference}\n"
-                # sms_message = f"Hello @{request.user.username}. Your bundle purchase has been completed successfully. {bundle}MB has been credited to {phone_number}.\nReference: {reference}\nCurrent Wallet Balance: {user.wallet}\nThank you for using Noble Data GH.\n\nThe Noble Data GH"
-                #
-                # num_without_0 = phone_number[1:]
-                # print(num_without_0)
-                # receiver_body = {
-                #     'recipient': f"233{num_without_0}",
-                #     'sender_id': 'Noble Data',
-                #     'message': receiver_message
-                # }
-                #
-                # response = requests.request('POST', url=sms_url, params=receiver_body, headers=sms_headers)
-                # print(response.text)
+                receiver_message = f"Your bundle purchase has been completed successfully. {bundle}MB has been credited to you by {request.user.phone}.\nReference: {reference}\n"
+                sms_message = f"Hello @{request.user.username}. Your bundle purchase has been completed successfully. {bundle}MB has been credited to {phone_number}.\nReference: {reference}\nCurrent Wallet Balance: {user.wallet}\nThank you for using Data4All GH.\n\nThe Data4All GH"
 
-                # sms_body = {
-                #     'recipient': f"233{request.user.phone}",
-                #     'sender_id': 'Noble Data',
-                #     'message': sms_message
-                # }
-                #
-                # response = requests.request('POST', url=sms_url, params=sms_body, headers=sms_headers)
-                #
-                # print(response.text)
+                num_without_0 = phone_number[1:]
+                print(num_without_0)
+                receiver_body = {
+                    'recipient': f"233{num_without_0}",
+                    'sender_id': 'Data4All',
+                    'message': receiver_message
+                }
+
+                response = requests.request('POST', url=sms_url, params=receiver_body, headers=sms_headers)
+                print(response.text)
+
+                sms_body = {
+                    'recipient': f"233{request.user.phone}",
+                    'sender_id': 'Data4All',
+                    'message': sms_message
+                }
+
+                response = requests.request('POST', url=sms_url, params=sms_body, headers=sms_headers)
+
+                print(response.text)
 
                 return JsonResponse({'status': 'Transaction Completed Successfully', 'icon': 'success'})
             else:
@@ -135,7 +135,7 @@ def airtel_tigo(request):
         print(data)
 
         sms_headers = {
-            'Authorization': 'Bearer 1050|VDqcCUHwCBEbjcMk32cbdOhCFlavpDhy6vfgM4jU',
+            'Authorization': 'Bearer 1135|1MWAlxV4XTkDlfpld1VC3oRviLhhhZIEOitMjimq',
             'Content-Type': 'application/json'
         }
 
@@ -151,13 +151,13 @@ def airtel_tigo(request):
                 print(request.user.phone)
                 print("***********")
                 receiver_message = f"Your bundle purchase has been completed successfully. {bundle}MB has been credited to you by {request.user.phone}.\nReference: {payment_reference}\n"
-                sms_message = f"Hello @{request.user.username}. Your bundle purchase has been completed successfully. {bundle}MB has been credited to {phone_number}.\nReference: {payment_reference}\nThank you for using Noble Data GH.\n\nThe Noble Data GH"
+                sms_message = f"Hello @{request.user.username}. Your bundle purchase has been completed successfully. {bundle}MB has been credited to {phone_number}.\nReference: {payment_reference}\nThank you for using Data4All GH.\n\nThe Data4All GH"
 
                 # num_without_0 = phone_number[1:]
                 # print(num_without_0)
                 # receiver_body = {
                 #     'recipient': f"233{num_without_0}",
-                #     'sender_id': 'Noble Data',
+                #     'sender_id': 'Data4All',
                 #     'message': receiver_message
                 # }
                 #
@@ -166,7 +166,7 @@ def airtel_tigo(request):
                 #
                 # sms_body = {
                 #     'recipient': f"233{request.user.phone}",
-                #     'sender_id': 'Noble Data',
+                #     'sender_id': 'Data4All',
                 #     'message': sms_message
                 # }
                 #
@@ -179,16 +179,16 @@ def airtel_tigo(request):
                 transaction_to_be_updated = models.IShareBundleTransaction.objects.get(reference=payment_reference)
                 transaction_to_be_updated.transaction_status = "Failed"
                 new_transaction.save()
-                sms_message = f"Hello @{request.user.username}. Something went wrong with your transaction. Contact us for enquiries.\nBundle: {bundle}MB\nPhone Number: {phone_number}.\nReference: {payment_reference}\nThank you for using Noble Data GH.\n\nThe Noble Data GH"
+                sms_message = f"Hello @{request.user.username}. Something went wrong with your transaction. Contact us for enquiries.\nBundle: {bundle}MB\nPhone Number: {phone_number}.\nReference: {payment_reference}\nThank you for using Data4All GH.\n\nThe Data4All GH"
 
                 sms_body = {
                     'recipient': f"233{request.user.phone}",
-                    'sender_id': 'Noble Data',
+                    'sender_id': 'Data4All',
                     'message': sms_message
                 }
                 # response = requests.request('POST', url=sms_url, params=sms_body, headers=sms_headers)
                 # print(response.text)
-                # r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to={phone_number}&from=Noble Data GH&sms={receiver_message}"
+                # r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to={phone_number}&from=Data4All GH&sms={receiver_message}"
                 # response = requests.request("GET", url=r_sms_url)
                 # print(response.text)
                 return JsonResponse({'status': 'Something went wrong', 'icon': 'error'})
@@ -196,11 +196,11 @@ def airtel_tigo(request):
             transaction_to_be_updated = models.IShareBundleTransaction.objects.get(reference=payment_reference)
             transaction_to_be_updated.transaction_status = "Failed"
             new_transaction.save()
-            sms_message = f"Hello @{request.user.username}. Something went wrong with your transaction. Contact us for enquiries.\nBundle: {bundle}MB\nPhone Number: {phone_number}.\nReference: {payment_reference}\nThank you for using Noble Data GH.\n\nThe Noble Data GH"
+            sms_message = f"Hello @{request.user.username}. Something went wrong with your transaction. Contact us for enquiries.\nBundle: {bundle}MB\nPhone Number: {phone_number}.\nReference: {payment_reference}\nThank you for using Data4All GH.\n\nThe Data4All GH"
 
             sms_body = {
                 'recipient': f'233{request.user.phone}',
-                'sender_id': 'Noble Data',
+                'sender_id': 'Data4All',
                 'message': sms_message
             }
 
@@ -223,7 +223,7 @@ def mtn_pay_with_wallet(request):
         print(amount)
         print(reference)
         sms_headers = {
-            'Authorization': 'Bearer 1050|VDqcCUHwCBEbjcMk32cbdOhCFlavpDhy6vfgM4jU',
+            'Authorization': 'Bearer 1135|1MWAlxV4XTkDlfpld1VC3oRviLhhhZIEOitMjimq',
             'Content-Type': 'application/json'
         }
 
@@ -247,8 +247,8 @@ def mtn_pay_with_wallet(request):
         user.wallet -= float(amount)
         user.save()
         sms_body = {
-            'recipient': "233549914001",
-            'sender_id': 'Noble Data',
+            'recipient': "233540975553",
+            'sender_id': 'Data4All',
             'message': sms_message
         }
         # response = requests.request('POST', url=sms_url, params=sms_body, headers=sms_headers)
@@ -287,7 +287,7 @@ def mtn(request):
         )
         new_mtn_transaction.save()
         sms_headers = {
-            'Authorization': 'Bearer 1050|VDqcCUHwCBEbjcMk32cbdOhCFlavpDhy6vfgM4jU',
+            'Authorization': 'Bearer 1135|1MWAlxV4XTkDlfpld1VC3oRviLhhhZIEOitMjimq',
             'Content-Type': 'application/json'
         }
 
@@ -295,8 +295,8 @@ def mtn(request):
         sms_message = f"An order has been placed. {bundle}MB for {phone_number}"
 
         sms_body = {
-            'recipient': "233549914001",
-            'sender_id': 'Noble Data',
+            'recipient': "233540975553",
+            'sender_id': 'Data4All',
             'message': sms_message
         }
         # response = requests.request('POST', url=sms_url, params=sms_body, headers=sms_headers)
@@ -361,7 +361,7 @@ def mark_as_sent(request, pk):
         txn.transaction_status = "Completed"
         txn.save()
         sms_headers = {
-            'Authorization': 'Bearer 1050|VDqcCUHwCBEbjcMk32cbdOhCFlavpDhy6vfgM4jU',
+            'Authorization': 'Bearer 1135|1MWAlxV4XTkDlfpld1VC3oRviLhhhZIEOitMjimq',
             'Content-Type': 'application/json'
         }
 
@@ -370,7 +370,7 @@ def mark_as_sent(request, pk):
 
         sms_body = {
             'recipient': f"233{txn.bundle_number}",
-            'sender_id': 'Noble Data',
+            'sender_id': 'Data4All',
             'message': sms_message
         }
         # response = requests.request('POST', url=sms_url, params=sms_body, headers=sms_headers)
@@ -405,7 +405,7 @@ def credit_user(request):
 
             sms_body = {
                 'recipient': f"233{user_needed.phone}",
-                'sender_id': 'DataForAll',
+                'sender_id': 'Data4All',
                 'message': sms_message
             }
             response = requests.request('POST', url=sms_url, params=sms_body, headers=sms_headers)
@@ -439,7 +439,7 @@ def topup_info(request):
 
         sms_body = {
             'recipient': "233540975553",
-            'sender_id': 'DataForAll',
+            'sender_id': 'Data4All',
             'message': sms_message
         }
         response = requests.request('POST', url=sms_url, params=sms_body, headers=sms_headers)
