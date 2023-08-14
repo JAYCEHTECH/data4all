@@ -31,7 +31,7 @@ def pay_with_wallet(request):
         print(phone_number)
         print(amount)
         print(reference)
-        bundle = models.IshareBundlePrice.objects.get(price=float(amount)).bundle_volume
+        bundle = models.IshareBundlePrice.objects.get(price=float(amount)).bundle_volume if user.status == "User" else models.AgentIshareBundlePrice.objects.get(price=float(amount)).bundle_volume
         print(bundle)
         send_bundle_response = helper.send_bundle(request.user, phone_number, bundle, reference)
         data = send_bundle_response.json()
@@ -95,11 +95,13 @@ def pay_with_wallet(request):
 
 @login_required(login_url='login')
 def airtel_tigo(request):
-    form = forms.IShareBundleForm()
+    user = models.CustomUser.objects.get(id=request.user.id)
+    status = user.status
+    form = forms.IShareBundleForm(status)
     reference = helper.ref_generator()
     user_email = request.user.email
     if request.method == "POST":
-        form = forms.IShareBundleForm(request.POST)
+        form = forms.IShareBundleForm(data=request.POST, status=status)
         payment_reference = request.POST.get("reference")
         amount_paid = request.POST.get("amount")
         new_payment = models.Payment.objects.create(
@@ -115,7 +117,7 @@ def airtel_tigo(request):
         phone_number = request.POST.get("phone")
         offer = request.POST.get("amount")
         print(offer)
-        bundle = models.IshareBundlePrice.objects.get(price=float(offer)).bundle_volume
+        bundle = models.IshareBundlePrice.objects.get(price=float(offer)).bundle_volume if user.status == "User" else models.AgentIshareBundlePrice.objects.get(price=float(offer)).bundle_volume
         new_transaction = models.IShareBundleTransaction.objects.create(
             user=request.user,
             bundle_number=phone_number,
@@ -234,7 +236,7 @@ def mtn_pay_with_wallet(request):
             return JsonResponse({'status': f'Your wallet balance is low. Contact the admin to recharge. Admin Contact Info: 0{admin}'})
         elif user.wallet <= 0 or user.wallet < float(amount):
             return JsonResponse({'status': f'Your wallet balance is low. Contact the admin to recharge. Admin Contact Info: 0{admin}'})
-        bundle = models.MTNBundlePrice.objects.get(price=float(amount)).bundle_volume
+        bundle = models.MTNBundlePrice.objects.get(price=float(amount)).bundle_volume if user.status == "User" else models.AgentMTNBundlePrice.objects.get(price=float(amount)).bundle_volume
         print(bundle)
         sms_message = f"An order has been placed. {bundle}MB for {phone_number}"
         new_mtn_transaction = models.MTNTransaction.objects.create(
@@ -251,15 +253,17 @@ def mtn_pay_with_wallet(request):
             'sender_id': 'Data4All',
             'message': sms_message
         }
-        # response = requests.request('POST', url=sms_url, params=sms_body, headers=sms_headers)
-        # print(response.text)
+        response = requests.request('POST', url=sms_url, params=sms_body, headers=sms_headers)
+        print(response.text)
         return JsonResponse({'status': "Your transaction will be completed shortly", 'icon': 'success'})
     return redirect('mtn')
 
 
 @login_required(login_url='login')
 def mtn(request):
-    form = forms.MTNForm()
+    user = models.CustomUser.objects.get(id=request.user.id)
+    status = user.status
+    form = forms.MTNForm(status=status)
     reference = helper.ref_generator()
     user_email = request.user.email
     if request.method == "POST":
@@ -276,7 +280,9 @@ def mtn(request):
         phone_number = request.POST.get("phone")
         offer = request.POST.get("amount")
 
-        bundle = models.MTNBundlePrice.objects.get(price=float(offer)).bundle_volume
+        bundle = models.MTNBundlePrice.objects.get(
+            price=float(offer)).bundle_volume if user.status == "User" else models.AgentMTNBundlePrice.objects.get(
+            price=float(offer)).bundle_volume
 
         print(phone_number)
         new_mtn_transaction = models.MTNTransaction.objects.create(

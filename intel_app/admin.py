@@ -5,7 +5,7 @@ from . import models
 
 # Register your models here.
 class CustomUserAdmin(UserAdmin):
-    list_display = ['first_name', 'last_name', 'username', 'email', 'wallet', 'phone']
+    list_display = ['first_name', 'last_name', 'username', 'email', 'wallet', 'phone', 'status']
 
     fieldsets = (
         *UserAdmin.fieldsets,
@@ -13,7 +13,7 @@ class CustomUserAdmin(UserAdmin):
             'Other Personal info',
             {
                 'fields': (
-                    'phone', 'wallet'
+                    'phone', 'wallet', 'status'
                 )
             }
         )
@@ -48,3 +48,6 @@ admin.site.register(models.MTNBundlePrice)
 admin.site.register(models.Payment, PaymentAdmin)
 admin.site.register(models.AdminInfo)
 admin.site.register(models.TopUpRequest)
+admin.site.register(models.AgentIshareBundlePrice)
+admin.site.register(models.AgentMTNBundlePrice)
+
