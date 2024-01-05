@@ -158,27 +158,6 @@ def airtel_tigo(request):
                 receiver_message = f"Your bundle purchase has been completed successfully. {bundle}MB has been credited to you by {request.user.phone}.\nReference: {payment_reference}\n"
                 sms_message = f"Hello @{request.user.username}. Your bundle purchase has been completed successfully. {bundle}MB has been credited to {phone_number}.\nReference: {payment_reference}\nThank you for using Data4All GH.\n\nThe Data4All GH"
 
-                # num_without_0 = phone_number[1:]
-                # print(num_without_0)
-                # receiver_body = {
-                #     'recipient': f"233{num_without_0}",
-                #     'sender_id': 'Data4All',
-                #     'message': receiver_message
-                # }
-                #
-                # response = requests.request('POST', url=sms_url, params=receiver_body, headers=sms_headers)
-                # print(response.text)
-                #
-                # sms_body = {
-                #     'recipient': f"233{request.user.phone}",
-                #     'sender_id': 'Data4All',
-                #     'message': sms_message
-                # }
-                #
-                # response = requests.request('POST', url=sms_url, params=sms_body, headers=sms_headers)
-
-                # print(response.text)
-
                 return JsonResponse({'status': 'Transaction Completed Successfully', 'icon': 'success'})
             else:
                 transaction_to_be_updated = models.IShareBundleTransaction.objects.get(reference=payment_reference)
@@ -191,11 +170,6 @@ def airtel_tigo(request):
                     'sender_id': 'Data4All',
                     'message': sms_message
                 }
-                # response = requests.request('POST', url=sms_url, params=sms_body, headers=sms_headers)
-                # print(response.text)
-                # r_sms_url = f"https://sms.arkesel.com/sms/api?action=send-sms&api_key=UmpEc1JzeFV4cERKTWxUWktqZEs&to={phone_number}&from=Data4All GH&sms={receiver_message}"
-                # response = requests.request("GET", url=r_sms_url)
-                # print(response.text)
                 return JsonResponse({'status': 'Something went wrong', 'icon': 'error'})
         else:
             transaction_to_be_updated = models.IShareBundleTransaction.objects.get(reference=payment_reference)
@@ -241,6 +215,28 @@ def mtn_pay_with_wallet(request):
             return JsonResponse({'status': f'Your wallet balance is low. Contact the admin to recharge. Admin Contact Info: 0{admin}'})
         bundle = models.MTNBundlePrice.objects.get(price=float(amount)).bundle_volume if user.status == "User" else models.AgentMTNBundlePrice.objects.get(price=float(amount)).bundle_volume
         print(bundle)
+        auth = config("AT")
+        user_id = config("USER_ID")
+
+        url = "https://posapi.bestpaygh.com/api/v1/initiate_mtn_transaction"
+
+        payload = json.dumps({
+            "user_id": user_id,
+            "receiver": phone_number,
+            "data_volume": bundle,
+            "reference": reference,
+            "amount": amount,
+            "channel": "wallet"
+        })
+        headers = {
+            'Authorization': auth,
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        print(response.text)
+
         sms_message = f"An order has been placed. {bundle}MB for {phone_number}"
         new_mtn_transaction = models.MTNTransaction.objects.create(
             user=request.user,
@@ -284,10 +280,28 @@ def mtn(request):
         new_payment.save()
         phone_number = request.POST.get("phone")
         offer = request.POST.get("amount")
-
         bundle = models.MTNBundlePrice.objects.get(
             price=float(offer)).bundle_volume if user.status == "User" else models.AgentMTNBundlePrice.objects.get(
             price=float(offer)).bundle_volume
+
+        url = "https://posapi.bestpaygh.com/api/v1/initiate_mtn_transaction"
+
+        payload = json.dumps({
+            "user_id": user_id,
+            "receiver": phone_number,
+            "data_volume": bundle,
+            "reference": reference,
+            "amount": offer,
+            "channel": "wallet"
+        })
+        headers = {
+            'Authorization': auth,
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        print(response.text)
 
         print(phone_number)
         new_mtn_transaction = models.MTNTransaction.objects.create(
@@ -297,21 +311,7 @@ def mtn(request):
             reference=payment_reference,
         )
         new_mtn_transaction.save()
-        sms_headers = {
-            'Authorization': 'Bearer 1135|1MWAlxV4XTkDlfpld1VC3oRviLhhhZIEOitMjimq',
-            'Content-Type': 'application/json'
-        }
 
-        sms_url = 'https://webapp.usmsgh.com/api/sms/send'
-        sms_message = f"An order has been placed. {bundle}MB for {phone_number}"
-
-        sms_body = {
-            'recipient': "233540975553",
-            'sender_id': 'Data4All',
-            'message': sms_message
-        }
-        # response = requests.request('POST', url=sms_url, params=sms_body, headers=sms_headers)
-        # print(response.text)
         return JsonResponse({'status': "Your transaction will be completed shortly", 'icon': 'success'})
     user = models.CustomUser.objects.get(id=request.user.id)
     phone_num = user.phone
